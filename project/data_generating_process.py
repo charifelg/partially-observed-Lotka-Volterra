@@ -133,3 +133,23 @@ function lv_gen_and_obs!(res::Sim, prey0::Int, pred0::Int, λ_breed::Float64, λ
         res.n_prednew[t] = new_pred
     end
 end
+
+# generate a sample
+function gen_sample!(res, prey0, pred0, λ_breed, λ_interaction, λ_death, max_time, p_obs, d_start, d_end, obs0_prey, obs0_pred, ϵ)
+    count = 0
+    # Generate new observation and store in `res`
+    lv_gen_and_obs!(res, prey0, pred0, λ_breed, λ_interaction, λ_death, max_time, p_obs, d_start, d_end)
+    # Extract new observations of prey and predator from `res`
+    obs1_prey = res.obs_prey
+    obs1_pred = res.obs_pred
+    d = 0.0
+    # Check if the difference between new and old observations is less than the threshold ϵ
+    if dist(obs1_prey, obs0_prey) <= ϵ && dist(obs1_pred, obs0_pred) <= ϵ
+        count += 1
+        # Compute distance between the two observations
+        d = dist(obs1_prey, obs0_prey) + dist(obs1_pred, obs0_pred)
+    end
+    # end
+    # Return the count and the distance
+    return count, d
+end
